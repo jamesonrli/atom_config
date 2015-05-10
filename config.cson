@@ -1,0 +1,40 @@
+"*":
+  welcome:
+    showOnStartup: false
+  core:
+    audioBeep: false
+    themes: [
+      "one-dark-ui"
+      "atom-dark-syntax"
+    ]
+    disabledPackages: [
+      "language-less"
+      "language-perl"
+      "language-php"
+      "language-python"
+      "language-sass"
+      "welcome"
+      "linter"
+      "metrics"
+      "exception-reporting"
+    ]
+    destroyEmptyPanes: false
+    ignoredNames: [
+      "*.class"
+    ]
+  editor:
+    invisibles: {}
+    fontSize: 11
+    tabLength: 3
+  "vim-mode": {}
+  "autocomplete-plus":
+    confirmCompletion: "enter"
+  tabs: {}
+  "spell-check": {}
+  "highlight-selected": {}
+  "tree-view":
+    hideIgnoredNames: true
+    hideVcsIgnoredFiles: true
+  linter: {}
+  "git-diff":
+    showIconsInEditorGutter: true
