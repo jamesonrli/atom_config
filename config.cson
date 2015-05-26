@@ -21,6 +21,9 @@
     destroyEmptyPanes: false
     ignoredNames: [
       "*.class"
+      "antlr.generated*"
+      ".*"
+      "*.tokens"
     ]
   editor:
     invisibles: {}

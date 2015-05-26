@@ -130,9 +130,9 @@ class AutocompleteManager
     scopeDescriptor = cursor.getScopeDescriptor()
     prefix = @getPrefix(@editor, bufferPosition)
 
-    @getSuggestionsFromProviders({@editor, bufferPosition, scopeDescriptor, prefix}, activatedManually)
+    @getSuggestionsFromProviders({@editor, bufferPosition, scopeDescriptor, prefix, activatedManually})
 
-  getSuggestionsFromProviders: (options, activatedManually) =>
+  getSuggestionsFromProviders: (options) =>
     providers = @providerManager.providersForScopeDescriptor(options.scopeDescriptor)
 
     providerPromises = []
@@ -180,7 +180,7 @@ class AutocompleteManager
         for suggestion in providerSuggestions
           suggestion.replacementPrefix ?= @getDefaultReplacementPrefix(options.prefix)
           suggestion.provider = provider
-          @addManualActivationStrictPrefix(provider, suggestion.replacementPrefix) if activatedManually
+          @addManualActivationStrictPrefix(provider, suggestion.replacementPrefix) if options.activatedManually
 
         providerSuggestions = @filterSuggestions(providerSuggestions, options) if provider.filterSuggestions
         providerSuggestions
@@ -191,7 +191,7 @@ class AutocompleteManager
       .then (suggestions) =>
         return unless @currentSuggestionsPromise is suggestionsPromise
         suggestions = @filterForManualActivationStrictPrefix(suggestions)
-        if activatedManually and @shouldDisplaySuggestions and suggestions.length is 1
+        if options.activatedManually and @shouldDisplaySuggestions and suggestions.length is 1
           # When there is one suggestion in manual mode, just confirm it
           @confirm(suggestions[0])
         else
@@ -238,7 +238,7 @@ class AutocompleteManager
         Autocomplete provider '#{provider.constructor.name}(#{provider.id})'
         returns suggestions with a `word` attribute.
         The `word` attribute is now `text`.
-        See https://github.com/atom-community/autocomplete-plus/wiki/Provider-API
+        See https://github.com/atom/autocomplete-plus/wiki/Provider-API
       """
     if suggestion.prefix?
       hasDeprecations = true
@@ -247,7 +247,7 @@ class AutocompleteManager
         Autocomplete provider '#{provider.constructor.name}(#{provider.id})'
         returns suggestions with a `prefix` attribute.
         The `prefix` attribute is now `replacementPrefix` and is optional.
-        See https://github.com/atom-community/autocomplete-plus/wiki/Provider-API
+        See https://github.com/atom/autocomplete-plus/wiki/Provider-API
       """
     if suggestion.label?
       hasDeprecations = true
@@ -256,7 +256,7 @@ class AutocompleteManager
         Autocomplete provider '#{provider.constructor.name}(#{provider.id})'
         returns suggestions with a `label` attribute.
         The `label` attribute is now `rightLabel` or `rightLabelHTML`.
-        See https://github.com/atom-community/autocomplete-plus/wiki/Provider-API
+        See https://github.com/atom/autocomplete-plus/wiki/Provider-API
       """
     if suggestion.onWillConfirm?
       hasDeprecations = true
@@ -265,7 +265,7 @@ class AutocompleteManager
         Autocomplete provider '#{provider.constructor.name}(#{provider.id})'
         returns suggestions with a `onWillConfirm` callback.
         The `onWillConfirm` callback is no longer supported.
-        See https://github.com/atom-community/autocomplete-plus/wiki/Provider-API
+        See https://github.com/atom/autocomplete-plus/wiki/Provider-API
       """
     if suggestion.onDidConfirm?
       hasDeprecations = true
@@ -274,7 +274,7 @@ class AutocompleteManager
         Autocomplete provider '#{provider.constructor.name}(#{provider.id})'
         returns suggestions with a `onDidConfirm` callback.
         The `onDidConfirm` callback is now a `onDidInsertSuggestion` callback on the provider itself.
-        See https://github.com/atom-community/autocomplete-plus/wiki/Provider-API
+        See https://github.com/atom/autocomplete-plus/wiki/Provider-API
       """
     hasDeprecations
 
@@ -337,6 +337,7 @@ class AutocompleteManager
   hideSuggestionList: =>
     return if @disposed
     @clearManualActivationStrictPrefixes()
+    @suggestionList.changeItems(null)
     @suggestionList.hide()
     @shouldDisplaySuggestions = false
 
@@ -437,16 +438,24 @@ class AutocompleteManager
     return if @disposed
     return @hideSuggestionList() if @compositionInProgress
     shouldActivate = false
-    cursorBufferPosition = @editor.getLastCursor().getBufferPosition()
+    cursorPositions = @editor.getCursorBufferPositions()
 
     if @autoActivationEnabled or @suggestionList.isActive()
-      if newText?.length and newRange.containsPoint(cursorBufferPosition)
-        # Activate on space, a non-whitespace character, or a bracket-matcher pair
-        shouldActivate = newText is ' ' or newText.trim().length is 1 or newText in @bracketMatcherPairs
-      else if oldText?.length and (@backspaceTriggersAutocomplete or @suggestionList.isActive()) and oldRange.containsPoint(cursorBufferPosition)
-        # Suggestion list must be either active or backspaceTriggersAutocomplete must be true for activation to occur
-        # Activate on removal of a space, a non-whitespace character, or a bracket-matcher pair
-        shouldActivate = oldText is ' ' or oldText.trim().length is 1 or oldText in @bracketMatcherPairs
+
+      # Activate on space, a non-whitespace character, or a bracket-matcher pair.
+      if newText.length > 0
+        shouldActivate =
+          (cursorPositions.some (position) -> newRange.containsPoint(position)) and
+          (newText is ' ' or newText.trim().length is 1 or newText in @bracketMatcherPairs)
+
+      # Suggestion list must be either active or backspaceTriggersAutocomplete must be true for activation to occur.
+      # Activate on removal of a space, a non-whitespace character, or a bracket-matcher pair.
+      else if oldText.length > 0
+        shouldActivate =
+          (@backspaceTriggersAutocomplete or @suggestionList.isActive()) and
+          (cursorPositions.some (position) -> newRange.containsPoint(position)) and
+          (oldText is ' ' or oldText.trim().length is 1 or oldText in @bracketMatcherPairs)
+
       shouldActivate = false if shouldActivate and @shouldSuppressActivationForEditorClasses()
 
     if shouldActivate
