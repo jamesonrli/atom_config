@@ -20,15 +20,12 @@
     ]
     destroyEmptyPanes: false
     ignoredNames: [
-      "*.class"
-      "antlr.generated*"
       ".*"
-      "*.tokens"
     ]
   editor:
     invisibles: {}
     fontSize: 11
-    tabLength: 3
+    showIndentGuide: true
   "vim-mode": {}
   "autocomplete-plus":
     confirmCompletion: "enter"
@@ -41,3 +38,5 @@
   linter: {}
   "git-diff":
     showIconsInEditorGutter: true
+  "tabs-to-spaces":
+    onSave: "untabify"

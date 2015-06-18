@@ -95,7 +95,7 @@ class Symbol
         continue unless options.selectors?
         for filePath, {scopeChains} of @metadataByPath
           for scopeChain, __ of scopeChains
-            if (!@type or options.typePriority > typePriority) and selectorsMatchScopeChain(options.selectors, scopeChain)
+            if (not @type or options.typePriority > typePriority) and selectorsMatchScopeChain(options.selectors, scopeChain)
               @type = type
               typePriority = options.typePriority
       @cachedConfig = config
@@ -174,6 +174,7 @@ class SymbolStore
 
     for bufferRow in [bufferRange.start.row..bufferRange.end.row] by 1
       tokenizedLine = tokenizedLines[bufferRow]
+      continue unless tokenizedLine?
       useTokenIterator ?= typeof tokenizedLine.getTokenIterator is 'function'
 
       if useTokenIterator

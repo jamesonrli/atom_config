@@ -1,6 +1,6 @@
 {
   "name": "autocomplete-plus",
-  "version": "2.17.1",
+  "version": "2.17.4",
   "main": "./lib/main",
   "description": "Display possible completions in the editor while typing",
   "repository": {
@@ -22,7 +22,7 @@
     "underscore-plus": "^1.6.6"
   },
   "devDependencies": {
-    "coffeelint": ">=1.8.1",
+    "coffeelint": "^1.9.7",
     "fs-plus": ">=2.4.0",
     "temp": ">=0.7.0"
   },
@@ -46,10 +46,10 @@
     "url": "https://github.com/atom/autocomplete-plus/issues"
   },
   "homepage": "https://github.com/atom/autocomplete-plus",
-  "_id": "autocomplete-plus@2.17.1",
-  "_shasum": "8524dfb283a0974f7d6d57d19f3d8984892a3039",
-  "_resolved": "file:../d-115424-8715-1xuzebt/package.tgz",
-  "_from": "../d-115424-8715-1xuzebt/package.tgz",
+  "_id": "autocomplete-plus@2.17.4",
+  "_shasum": "29309e857f6f2dbb50d5a809ee79d09276a4919a",
+  "_resolved": "file:../d-115517-12715-oy1k1o/package.tgz",
+  "_from": "../d-115517-12715-oy1k1o/package.tgz",
   "_atomModuleCache": {
     "version": 1,
     "dependencies": [
@@ -110,7 +110,7 @@
       },
       {
         "name": "amdefine",
-        "version": "0.1.0",
+        "version": "0.1.1",
         "path": "node_modules/grim/node_modules/coffeestack/node_modules/source-map/node_modules/amdefine/amdefine.js"
       },
       {
@@ -180,7 +180,7 @@
       },
       {
         "name": "semver",
-        "version": "4.3.4",
+        "version": "4.3.6",
         "path": "node_modules/semver/semver.js"
       },
       {
